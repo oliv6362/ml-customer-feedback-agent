@@ -7,7 +7,7 @@ from feedback_agent.config import LLM_CONFIG
 
 def create_feedback_analysis_agent() -> ConversableAgent:
     # define the agent
-    agent = ConversableAgent(
+    feedback_analysis_agent = ConversableAgent(
         name="Feedback Analysis Agent",
         system_message="You are a helpful AI assistant. "
                       "You can perform sentiment analysis on customer feedback. "
@@ -21,12 +21,12 @@ def create_feedback_analysis_agent() -> ConversableAgent:
     )
 
     # add the tools to the agent
-    agent.register_for_llm(name="feedback_reader", description="Read customer feedback")(query_feedback)
-    agent.register_for_llm(name="sentiment_analysis", description="Analyze the sentiment of a customer feedback")(analyze_sentiment)
+    feedback_analysis_agent.register_for_llm(name="feedback_reader", description="Read customer feedback")(query_feedback)
+    feedback_analysis_agent.register_for_llm(name="sentiment_analysis", description="Analyze the sentiment of a customer feedback")(analyze_sentiment)
     # agent.register_for_llm(name="categorization", description="Categorize feedback into themes")(categorize_feedback)
     # agent.register_for_llm(name="keyword_extraction", description="Extract keywords from a customer feedback")(extract_keywords)
 
-    return agent
+    return feedback_analysis_agent
 
 def create_user_proxy():
     user_proxy = ConversableAgent(
