@@ -1,30 +1,26 @@
 from autogen import ConversableAgent
-from feedback_agent.tools.feedback_reader_tool import query_feedback
-from feedback_agent.tools.sentiment_analysis_tool import analyze_sentiment
-from feedback_agent.tools.categorization_tool import categorize_feedback
-from feedback_agent.tools.keyword_extraction_tool import extract_keywords
+from feedback_agent.tools.insight_generation_tool import generate_insights
+from feedback_agent.tools.feedback_processing_tool import process_feedback
 from feedback_agent.config import LLM_CONFIG
 
 def create_feedback_analysis_agent() -> ConversableAgent:
     # define the agent
     feedback_analysis_agent = ConversableAgent(
         name="Feedback Analysis Agent",
-        system_message="You are a helpful AI assistant. "
-                      "You can perform sentiment analysis on customer feedback. "
-                      "You can read customer feedback using the feedback_reader tool. It will return a list of feedback, that consists of id, text, and source. "
-                      "Given a customer feedback, you can use the sentiment_analysis tool to analyze the sentiment. "
-                      "You can also categorize the feedback into themes using the categorization tool. "
-                      "You can also extract keywords from the feedback using the keyword_extraction tool. "
-                      "Don't include any other text in your response. "
-                      "Return 'TERMINATE' when the task is done.",
+        system_message="You are a helpful AI assistant that analyzes customer feedback. "
+                       "You can process all customer feedback using the feedback_processing tool. "
+                       "The feedback_processing tool reads feedback, analyzes sentiment, extracts keywords, "
+                       "and categorizes feedback using predefined categories. "
+                       "You can generate actionable insights using the insight_generation tool. "
+                       "When the task is complete, return the processed feedback and insights "
+                       "Don't include any other text in your response. "
+                       "Return 'TERMINATE' when the task is done.",
         llm_config=LLM_CONFIG,
     )
 
     # add the tools to the agent
-    feedback_analysis_agent.register_for_llm(name="feedback_reader", description="Read customer feedback")(query_feedback)
-    feedback_analysis_agent.register_for_llm(name="sentiment_analysis", description="Analyze the sentiment of a customer feedback")(analyze_sentiment)
-    feedback_analysis_agent.register_for_llm(name="categorization", description="Categorize feedback into themes")(categorize_feedback)
-    feedback_analysis_agent.register_for_llm(name="keyword_extraction", description="Extract keywords from a customer feedback")(extract_keywords)
+    feedback_analysis_agent.register_for_llm(name="feedback_processing", description="Read, analyze sentiment, extract keywords, and categorize all customer feedback")(process_feedback)
+    feedback_analysis_agent.register_for_llm(name="insight_generation", description="Generate actionable business insights from processed customer feedback")(generate_insights)
 
     return feedback_analysis_agent
 
@@ -35,44 +31,27 @@ def create_user_proxy():
         is_termination_msg=lambda msg: msg.get("content") is not None and "TERMINATE" in msg["content"],
         human_input_mode="NEVER",
     )
-    user_proxy.register_for_execution(name="feedback_reader")(query_feedback)
-    user_proxy.register_for_execution(name="sentiment_analysis")(analyze_sentiment)
-    user_proxy.register_for_execution(name="categorization")(categorize_feedback)
-    user_proxy.register_for_execution(name="keyword_extraction")(extract_keywords)
+    user_proxy.register_for_execution(name="feedback_processing")(process_feedback)
+    user_proxy.register_for_execution(name="insight_generation")(generate_insights)
+
     return user_proxy
+
 
 
 def main():
     user_proxy = create_user_proxy()
     feedback_analysis_agent = create_feedback_analysis_agent()
+
     user_proxy.initiate_chat(
-        feedback_analysis_agent, 
+        feedback_analysis_agent,
         message="""
-                1. Read feedback from the feedback store, using the feedback_reader tool.
-                2. For each feedback item, analyze the sentiment using the sentiment_analysis tool.
-                3. For each feedback item, extract keywords using the keyword_extraction tool.
-                4. For each feedback item, categorize the feedback using the categorization tool and the extracted keywords.
-                5. Return one JSON array where each object contains:
-                   - id
-                   - sentiment
-                   - keywords
-                   - categories
-                Example:
-                [
-                    {
-                        "id": "1",
-                        "sentiment": "positive",
-                        "keywords": ["product", "quality"],
-                        "categories": ["Product Quality"]
-                    },
-                    {
-                        "id": "2",
-                        "sentiment": "negative",
-                        "keywords": ["delivery", "slow"],
-                        "categories": ["Delivery", "Staff"]
-                    }
-                ]
-                6. Return only the JSON array.
+                1. Process all feedback using the feedback_processing tool.
+                2. Generate actionable insights from the processed feedback using the insight_generation tool.
+                3. Return both:
+                   - the processed feedback JSON array
+                   - the generated insights
+
+                Return only the processed feedback and insights.
                 """
     )
 
