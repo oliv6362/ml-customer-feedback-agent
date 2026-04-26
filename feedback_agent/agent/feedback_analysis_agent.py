@@ -48,7 +48,7 @@ def main():
                 1. Process all feedback using the feedback_processing tool.
                 2. Generate actionable insights from the processed feedback using the insight_generation tool.
                 3. Return both:
-                   - the processed feedback JSON array
+                   - the processed feedback as a readable, formatted JSON array
                    - the generated insights
 
                 Return only the processed feedback and insights.
