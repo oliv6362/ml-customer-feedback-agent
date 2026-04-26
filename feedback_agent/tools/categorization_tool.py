@@ -66,6 +66,9 @@ CATEGORY_KEYWORDS = {
         "satisfied",
         "disappointed",
         "happy",
+        "love",
+        "great",
+        "bad",
     },
 }
 
