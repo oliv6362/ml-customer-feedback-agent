@@ -9,7 +9,7 @@ STOP_WORDS = {
     "this", "that", "these", "those",
     "is", "are", "was", "were", "be", "been", "being",
     "have", "has", "had", "do", "does", "did",
-    "very", "really", "quite", "just",
+    "very", "really", "quite", "just", "during",
 }
 
 IMPORTANT_PHRASES = {
