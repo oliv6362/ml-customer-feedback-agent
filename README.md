@@ -34,8 +34,11 @@ The smaller tools are used internally by the feedback processing tool, which kee
 
 - Make sure Ollama is running locally and that you have pulled an Ollama model, for example gemma4:latest.  
 - Have Python 3.10-3.12 installed
+- Miniconda, Anaconda, venv, or another Python virtual environment tool
 
 ## Installation
+
+Create and activate a virtual environment.
 
 Install Python dependencies:
 
